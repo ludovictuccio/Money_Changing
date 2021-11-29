@@ -1,4 +1,4 @@
-package com.personalTraining.change.domain;
+package com.money.changing.domain;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Change {
+public class Money {
 
     // Cents (0,50, 0,20, 0,10, 0,05, 0,02, 0,01)
     private BigDecimal cents50;

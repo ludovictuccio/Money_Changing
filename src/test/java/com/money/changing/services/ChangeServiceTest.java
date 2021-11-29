@@ -1,4 +1,4 @@
-package com.personalTraining.change.services;
+package com.money.changing.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.personalTraining.change.domain.Change;
+import com.money.changing.domain.Money;
 
 @SpringBootTest
-public class ChangeMoneyServiceTest {
+public class ChangeServiceTest {
 
     @Autowired
-    public IChangeMoneyService changeMoneyService;
+    public IChangeService changeMoneyService;
 
     @Test
     @Tag("calculateChange")
@@ -24,8 +24,7 @@ public class ChangeMoneyServiceTest {
     public void givenTwoIntValues_whenChange_thenReturnCorrectInteger() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
-                .calculateChange(new BigDecimal("80"));
+        Money result = changeMoneyService.calculateChange(new BigDecimal("80"));
         // THEN
         assertThat(result).isNotNull();
         assertThat(result.getBanknotes50()).isEqualTo(new BigDecimal("1"));
@@ -39,7 +38,7 @@ public class ChangeMoneyServiceTest {
     public void givenMaxIntValues_whenChange_thenReturnCorrectInteger() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("888"));
         // THEN
         assertThat(result).isNotNull();
@@ -60,7 +59,7 @@ public class ChangeMoneyServiceTest {
     public void givenMaxMutliplyTwoIntValues_whenChange_thenReturnCorrectInteger() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("1776"));
         // THEN
         assertThat(result).isNotNull();
@@ -78,7 +77,7 @@ public class ChangeMoneyServiceTest {
     public void givenMaxMutliplyTenIntValues_whenChange_thenReturnCorrectInteger() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("8880"));
         // THEN
         assertThat(result).isNotNull();
@@ -96,8 +95,7 @@ public class ChangeMoneyServiceTest {
     public void givenFiftyIntValues_whenChange_thenReturnCorrectInteger() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
-                .calculateChange(new BigDecimal("15"));
+        Money result = changeMoneyService.calculateChange(new BigDecimal("15"));
         // THEN
         assertThat(result).isNotNull();
         assertThat(result.getBanknotes10()).isEqualTo(new BigDecimal("1"));
@@ -110,7 +108,7 @@ public class ChangeMoneyServiceTest {
     public void givenNullAmountToChange_whenChange_thenReturnNull() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService.calculateChange(null);
+        Money result = changeMoneyService.calculateChange(null);
         // THEN
         assertThat(result).isNull();
     }
@@ -121,7 +119,7 @@ public class ChangeMoneyServiceTest {
     public void givenMaxDecimalValues_whenChange_thenReturnCorrectResult() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("888.88"));
         // THEN
         assertThat(result).isNotNull();
@@ -148,7 +146,7 @@ public class ChangeMoneyServiceTest {
     public void givenDecimalValues_whenChange_thenReturnCorrectResult() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("4.34"));
         // THEN
         assertThat(result).isNotNull();
@@ -164,7 +162,7 @@ public class ChangeMoneyServiceTest {
     public void givenDecimalValues2_whenChange_thenReturnCorrectResult() {
         // GIVEN
         // WHEN
-        Change result = changeMoneyService
+        Money result = changeMoneyService
                 .calculateChange(new BigDecimal("4.33"));
         // THEN
         assertThat(result).isNotNull();
@@ -175,110 +173,110 @@ public class ChangeMoneyServiceTest {
         assertThat(result.getCents1()).isEqualTo(new BigDecimal("1"));
     }
 
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - 0 to change - False")
-    public void givenZeroToChange_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(0.00,
-                0.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry -  -10 to change - False")
-    public void givenNegativeNumber_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(-10.00,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - Article price > given money - False")
-    public void givenArticlePriceSuperiorThanGivenChange_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(20.00,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - Same value - False")
-    public void givenNoMoneyToChange_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(10.00,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - 1 cents to change - True")
-    public void givenOneCentToChange_whenChange_thenReturnTrue() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(9.99,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isTrue();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - .25 - True")
-    public void givenCentsWithoutZero_whenChange_thenReturnTrue() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(.25,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isTrue();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - 1 cents to change - True")
-    public void givenIntegerValueEntry_whenPossibleChange_thenReturnTrue() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(1, 10);
-        // THEN
-        assertThat(isPossibleToChange).isTrue();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - 9.999 - Not valid decimal - False")
-    public void givenArticlePriceWithThreeDecimal_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(9.999,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
-
-    @Test
-    @Tag("optimalChange")
-    @DisplayName("UserEntry - -.25 - Not valid decimal - False")
-    public void givenNegativeInputWithOnlyFractDigits_whenChange_thenReturnFalse() {
-        // GIVEN
-        // WHEN
-        boolean isPossibleToChange = changeMoneyService.optimalChange(-.25,
-                10.00);
-        // THEN
-        assertThat(isPossibleToChange).isFalse();
-    }
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - 0 to change - False")
+//    public void givenZeroToChange_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(0.00,
+//                0.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry -  -10 to change - False")
+//    public void givenNegativeNumber_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(-10.00,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - Article price > given money - False")
+//    public void givenArticlePriceSuperiorThanGivenChange_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(20.00,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - Same value - False")
+//    public void givenNoMoneyToChange_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(10.00,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - 1 cents to change - True")
+//    public void givenOneCentToChange_whenChange_thenReturnTrue() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(9.99,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isTrue();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - .25 - True")
+//    public void givenCentsWithoutZero_whenChange_thenReturnTrue() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(.25,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isTrue();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - 1 cents to change - True")
+//    public void givenIntegerValueEntry_whenPossibleChange_thenReturnTrue() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(1, 10);
+//        // THEN
+//        assertThat(isPossibleToChange).isTrue();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - 9.999 - Not valid decimal - False")
+//    public void givenArticlePriceWithThreeDecimal_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(9.999,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
+//
+//    @Test
+//    @Tag("optimalChange")
+//    @DisplayName("UserEntry - -.25 - Not valid decimal - False")
+//    public void givenNegativeInputWithOnlyFractDigits_whenChange_thenReturnFalse() {
+//        // GIVEN
+//        // WHEN
+//        boolean isPossibleToChange = changeMoneyService.optimalChange(-.25,
+//                10.00);
+//        // THEN
+//        assertThat(isPossibleToChange).isFalse();
+//    }
 }

@@ -1,4 +1,4 @@
-package com.personalTraining.change.services;
+package com.money.changing.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,14 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.personalTraining.change.domain.Change;
-import com.personalTraining.change.util.Constants;
+import com.money.changing.controllers.exceptions.BadEntryInputException;
+import com.money.changing.domain.Money;
+import com.money.changing.util.Constants;
 
 @Service
-public class ChangeMoneyService implements IChangeMoneyService {
+public class ChangeService implements IChangeService {
 
-    private static final Logger LOGGER = LogManager
-            .getLogger("ChangeMoneyService");
+    private static final Logger LOGGER = LogManager.getLogger("ChangeService");
 
     /**
      * This method is used to calculate the change. For each coin, cent or
@@ -25,9 +25,9 @@ public class ChangeMoneyService implements IChangeMoneyService {
      * @param moneyLeft
      * @return Change the money to change
      */
-    public Change calculateChange(BigDecimal moneyLeft) {
+    public Money calculateChange(BigDecimal moneyLeft) {
         try {
-            Change change = new Change();
+            Money change = new Money();
 
             BigDecimal[] tabBkn500 = moneyLeft
                     .divideAndRemainder(new BigDecimal(Constants.FIVE_HUNDRED));
@@ -128,107 +128,106 @@ public class ChangeMoneyService implements IChangeMoneyService {
      *
      * @param articlePrice
      * @param givenMoney
+     * @throws BadEntryInputException
      */
-    public boolean optimalChange(final double articlePrice,
-            final double givenMoney) {
-        boolean isPossibleToChange = false;
+    public Money optimalChange(final double articlePrice,
+            final double givenMoney) throws BadEntryInputException {
 
         double result = (givenMoney - articlePrice);
 
         if ((givenMoney < articlePrice) || (givenMoney <= Constants.ZERO)
                 || (articlePrice <= Constants.ZERO)) {
             result = Constants.ZERO;
-            LOGGER.error(
+            throw new BadEntryInputException(
                     "Impossible to change money. Given money can't be less than article's price, and price can't be a negative number ! Please try again.");
-            return isPossibleToChange;
         } else if (givenMoney == articlePrice) {
-            LOGGER.error("No money to change.");
-            return isPossibleToChange;
+            throw new BadEntryInputException("No money to change.");
+
         } else if ((!Pattern.matches(
                 "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
                 String.valueOf(givenMoney)))
                 || (!Pattern.matches(
                         "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
                         String.valueOf(articlePrice)))) {
-            LOGGER.error("Input invalid. You must set max 2 fract digits.");
-            return isPossibleToChange;
-        } else
-            isPossibleToChange = true;
+            throw new BadEntryInputException(
+                    "Input invalid. You must set max 2 fract digits.");
+        } else {
+            BigDecimal sumToChange = new BigDecimal(result)
+                    .setScale(Constants.TWO, RoundingMode.HALF_UP);
+            Money money = calculateChange(sumToChange);
 
-        BigDecimal sumToChange = new BigDecimal(result).setScale(Constants.TWO,
-                RoundingMode.HALF_UP);
-        Change money = calculateChange(sumToChange);
+            System.out.println("TOTAL to change: " + sumToChange);
+            System.out.println("--------------\nBANKNOTES quantity :");
+            System.out.println("- 500 E ==> " + money.getBanknotes500());
+            System.out.println("- 200 E ==> " + money.getBanknotes200());
+            System.out.println("- 100 E ==> " + money.getBanknotes100());
+            System.out.println("-  50 E ==> " + money.getBanknotes50());
+            System.out.println("-  20 E ==> " + money.getBanknotes20());
+            System.out.println("-  10 E ==> " + money.getBanknotes10());
+            System.out.println("-   5 E ==> " + money.getBanknotes5());
+            System.out.println("--------------\nCOINS quantity :");
+            System.out.println("-  2 E ==> " + money.getCoin2());
+            System.out.println("-  1 E ==> " + money.getCoin1());
+            System.out.println("--------------\nCENTS quantity :");
+            System.out.println("- 0,50 E ==> " + money.getCents50());
+            System.out.println("- 0,20 E ==> " + money.getCents20());
+            System.out.println("- 0,10 E ==> " + money.getCents10());
+            System.out.println("- 0,05 E ==> " + money.getCents5());
+            System.out.println("- 0,02 E ==> " + money.getCents2());
+            System.out.println("- 0,01 E ==> " + money.getCents1());
 
-        System.out.println("TOTAL to change: " + sumToChange);
-        System.out.println("--------------\nBANKNOTES quantity :");
-        System.out.println("- 500 E ==> " + money.getBanknotes500());
-        System.out.println("- 200 E ==> " + money.getBanknotes200());
-        System.out.println("- 100 E ==> " + money.getBanknotes100());
-        System.out.println("-  50 E ==> " + money.getBanknotes50());
-        System.out.println("-  20 E ==> " + money.getBanknotes20());
-        System.out.println("-  10 E ==> " + money.getBanknotes10());
-        System.out.println("-   5 E ==> " + money.getBanknotes5());
-        System.out.println("--------------\nCOINS quantity :");
-        System.out.println("-  2 E ==> " + money.getCoin2());
-        System.out.println("-  1 E ==> " + money.getCoin1());
-        System.out.println("--------------\nCENTS quantity :");
-        System.out.println("- 0,50 E ==> " + money.getCents50());
-        System.out.println("- 0,20 E ==> " + money.getCents20());
-        System.out.println("- 0,10 E ==> " + money.getCents10());
-        System.out.println("- 0,05 E ==> " + money.getCents5());
-        System.out.println("- 0,02 E ==> " + money.getCents2());
-        System.out.println("- 0,01 E ==> " + money.getCents1());
+            // Check one by one correct change's sum
+            BigDecimal sumCents1 = (money.getCents1()
+                    .multiply(new BigDecimal(Constants.ONE)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCents2 = (money.getCents2()
+                    .multiply(new BigDecimal(Constants.TWO)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCents5 = (money.getCents5()
+                    .multiply(new BigDecimal(Constants.FIVE)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCents10 = (money.getCents10()
+                    .multiply(new BigDecimal(Constants.TEN)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCents20 = (money.getCents20()
+                    .multiply(new BigDecimal(Constants.TWENTY)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCents50 = (money.getCents50()
+                    .multiply(new BigDecimal(Constants.FIFTY)
+                            .divide(new BigDecimal(Constants.HUNDRED))));
 
-        // Check one by one correct change's sum
-        BigDecimal sumCents1 = (money.getCents1()
-                .multiply(new BigDecimal(Constants.ONE)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
-        BigDecimal sumCents2 = (money.getCents2()
-                .multiply(new BigDecimal(Constants.TWO)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
-        BigDecimal sumCents5 = (money.getCents5()
-                .multiply(new BigDecimal(Constants.FIVE)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
-        BigDecimal sumCents10 = (money.getCents10()
-                .multiply(new BigDecimal(Constants.TEN)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
-        BigDecimal sumCents20 = (money.getCents20()
-                .multiply(new BigDecimal(Constants.TWENTY)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
-        BigDecimal sumCents50 = (money.getCents50()
-                .multiply(new BigDecimal(Constants.FIFTY)
-                        .divide(new BigDecimal(Constants.HUNDRED))));
+            BigDecimal sumCoin1 = (money.getCoin1()
+                    .multiply(new BigDecimal(Constants.ONE)));
+            BigDecimal sumCoin2 = (money.getCoin2()
+                    .multiply(new BigDecimal(Constants.TWO)));
+            BigDecimal sumBanknotes5 = (money.getBanknotes5()
+                    .multiply(new BigDecimal(Constants.FIVE)));
+            BigDecimal sumBanknotes10 = (money.getBanknotes10()
+                    .multiply(new BigDecimal(Constants.TEN)));
+            BigDecimal sumBanknotes20 = (money.getBanknotes20()
+                    .multiply(new BigDecimal(Constants.TWENTY)));
+            BigDecimal sumBanknotes50 = (money.getBanknotes50()
+                    .multiply(new BigDecimal(Constants.FIFTY)));
+            BigDecimal sumBanknotes100 = (money.getBanknotes100()
+                    .multiply(new BigDecimal(Constants.HUNDRED)));
+            BigDecimal sumBanknotes200 = (money.getBanknotes200()
+                    .multiply(new BigDecimal(Constants.TWO_HUNDRED)));
+            BigDecimal sumBanknotes500 = (money.getBanknotes500()
+                    .multiply(new BigDecimal(Constants.FIVE_HUNDRED)));
 
-        BigDecimal sumCoin1 = (money.getCoin1()
-                .multiply(new BigDecimal(Constants.ONE)));
-        BigDecimal sumCoin2 = (money.getCoin2()
-                .multiply(new BigDecimal(Constants.TWO)));
-        BigDecimal sumBanknotes5 = (money.getBanknotes5()
-                .multiply(new BigDecimal(Constants.FIVE)));
-        BigDecimal sumBanknotes10 = (money.getBanknotes10()
-                .multiply(new BigDecimal(Constants.TEN)));
-        BigDecimal sumBanknotes20 = (money.getBanknotes20()
-                .multiply(new BigDecimal(Constants.TWENTY)));
-        BigDecimal sumBanknotes50 = (money.getBanknotes50()
-                .multiply(new BigDecimal(Constants.FIFTY)));
-        BigDecimal sumBanknotes100 = (money.getBanknotes100()
-                .multiply(new BigDecimal(Constants.HUNDRED)));
-        BigDecimal sumBanknotes200 = (money.getBanknotes200()
-                .multiply(new BigDecimal(Constants.TWO_HUNDRED)));
-        BigDecimal sumBanknotes500 = (money.getBanknotes500()
-                .multiply(new BigDecimal(Constants.FIVE_HUNDRED)));
+            // Addition to check correct change's sum
+            BigDecimal moneySumChanged = sumCents1.add(sumCents2).add(sumCents5)
+                    .add(sumCents10).add(sumCents20).add(sumCents50)
+                    .add(sumCoin1).add(sumCoin2).add(sumBanknotes5)
+                    .add(sumBanknotes10).add(sumBanknotes20).add(sumBanknotes50)
+                    .add(sumBanknotes100).add(sumBanknotes200)
+                    .add(sumBanknotes500);
+            System.out.println("-------------- \nTOTAL changed: "
+                    + moneySumChanged.setScale(2, RoundingMode.HALF_UP)
+                    + "\n--------------");
 
-        // Addition to check correct change's sum
-        BigDecimal moneySumChanged = sumCents1.add(sumCents2).add(sumCents5)
-                .add(sumCents10).add(sumCents20).add(sumCents50).add(sumCoin1)
-                .add(sumCoin2).add(sumBanknotes5).add(sumBanknotes10)
-                .add(sumBanknotes20).add(sumBanknotes50).add(sumBanknotes100)
-                .add(sumBanknotes200).add(sumBanknotes500);
-        System.out.println("-------------- \nTOTAL changed: "
-                + moneySumChanged.setScale(2, RoundingMode.HALF_UP)
-                + "\n--------------");
-
-        return isPossibleToChange;
+            return money;
+        }
     }
 
 }
