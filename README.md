@@ -16,8 +16,6 @@ BigDecimal is used, for money manipulation to avoid loss of precision. <br/>
 
 ## **Example** <br/>
 
-*Article price:* 2,34 <br/>
-and <br/>
-*Given money entry :* 500
+!!!!! **IN DEVELOPMENT** !!!!!
 
 ![Screenshot](Change.PNG)
