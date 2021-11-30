@@ -24,36 +24,12 @@ public class ChangeController {
     @Autowired
     public ChangeService changeService;
 
-//    @GetMapping
-//    public int changeMoney() {
-//        return 500;
-//    }
-
     @GetMapping
     public Money changeMoney(@RequestParam final double articlePrice,
             @RequestParam final double givenMoney)
             throws BadEntryInputException {
 
-        Money money = changeService.optimalChange(articlePrice, givenMoney);
-
-        return money;
+        return changeService.optimalChange(articlePrice, givenMoney);
     }
-
-//    @GetMapping
-//    public ResponseEntity<Boolean> changeMoney(
-//            @RequestParam final double articlePrice,
-//            @RequestParam final double givenMoney) {
-//
-//        boolean isChanged;
-//
-//        isChanged = changeService.optimalChange(articlePrice, givenMoney);
-//
-//        if (isChanged == false) {
-//            LOGGER.error("Error while money changing");
-//            return new ResponseEntity<Boolean>(HttpStatus.BAD_REQUEST);
-//        }
-//
-//        return new ResponseEntity<Boolean>(HttpStatus.OK);
-//    }
 
 }
