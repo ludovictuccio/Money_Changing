@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import MoneyChangingComponent from "./MoneyChangingComponent";
 
-class InstructorApp extends Component {
+class MoneyChangingApp extends Component {
     
     render() {
         return (<>
@@ -11,5 +11,5 @@ class InstructorApp extends Component {
         )
     }
 }
-
-export default InstructorApp
+    
+    export default MoneyChangingApp
