@@ -2,7 +2,6 @@ package com.money.changing.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -143,14 +142,14 @@ public class ChangeService implements IChangeService {
         } else if (givenMoney == articlePrice) {
             throw new BadEntryInputException("No money to change.");
 
-        } else if ((!Pattern.matches(
-                "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
-                String.valueOf(givenMoney)))
-                || (!Pattern.matches(
-                        "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
-                        String.valueOf(articlePrice)))) {
-            throw new BadEntryInputException(
-                    "Input invalid. You must set max 2 fract digits.");
+//        } else if ((!Pattern.matches(
+//                "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
+//                String.valueOf(givenMoney)))
+//                || (!Pattern.matches(
+//                        "(^(\\+|\\-)(0|([1-9][0-9]*))(\\.[0-9]{1,2})?$)|(^(0{0,1}|([1-9][0-9]*))(\\.[0-9]{1,2})?$)",
+//                        String.valueOf(articlePrice)))) {
+//            throw new BadEntryInputException(
+//                    "Input invalid. You must set max 2 fract digits.");
         } else {
             BigDecimal sumToChange = new BigDecimal(result)
                     .setScale(Constants.TWO, RoundingMode.HALF_UP);

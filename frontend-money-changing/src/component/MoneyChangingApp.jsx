@@ -5,7 +5,6 @@ class MoneyChangingApp extends Component {
     
     render() {
         return (<>
-              <h1>Money Changing Application</h1>
               <MoneyChangingComponent/>
             </>
         )

@@ -1,9 +1,12 @@
 import React, {Component} from "react";
-import CourseDataService from "../service/CourseDataService";
+import MoneyDataService from "../service/MoneyDataService";
 import { InputDecimal } from "./InputDecimal";
 import './MoneyChangingComponent.css';
+import axios from 'axios'
 
-const INSTRUCTOR = 'change'
+const ENDPOINT = 'change'
+const JAVA_API_URL = 'http://localhost:8080'
+const CHANGE_MONEY_API_URL = `${JAVA_API_URL}/${ENDPOINT}`
 const ARTICLE_PRICE = '0.00'
 const GIVEN_MONEY = '0.00'
 const MONEY_TO_CHANGE = '0.00'
@@ -18,48 +21,33 @@ class MoneyChangingComponent extends Component {
             MONEY_TO_CHANGE: [],
             value:''
         }
-        this.refreshCourses = this.refreshCourses.bind(this)
-        this.addCourseClicked = this.addCourseClicked.bind(this)     
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.onSubmit = this.onSubmit.bind(this)
     }
     componentDidMount() {
-        this.refreshCourses();
-    }
-    addCourseClicked() {
-        this.props.history.push(INSTRUCTOR)
-    }
-    refreshCourses() {
-        CourseDataService.moneyToChange(INSTRUCTOR)
-            .then(
-                response => {
-                    console.log(response);
-                    this.setState({MONEY_TO_CHANGE: JSON.stringify(response.data)})
-                }
-            )
-        }
-    handleSubmit(){
-    }
-    onSubmit(values) {
-            CourseDataService.updateChange(this.state.ARTICLE_PRICE, this.state.GIVEN_MONEY)
-                .then(() => this.props.history.push('/change'))
-        console.log(values);
+        this.onSubmit();
     }
 
+    onSubmit() {
+        return axios.get(`${CHANGE_MONEY_API_URL}?articlePrice=${parseFloat(this.ARTICLE_PRICE)}&givenMoney=${parseFloat(this.GIVEN_MONEY)}`);
+    }
         render() {
             return (
                 <div className="container">
-                  
-                  <div className="change-money">
+
+                    <div className="change-money">
+                        <h1>Welcome to change app !</h1>
+                    </div>
+
+                    <div className="change-money">   
                         <form className="form-horizontal">
                             <InputDecimal value={this.ARTICLE_PRICE}  type="InputDecimal" name="articlePrice" placeholder="Article price" />
-                            <InputDecimal value={this.GIVEN_MONEY}  type="InputDecimal" name="givenMoney" placeholder="Given money" />
-                            <input type="submit" onClick={this.addCourseClicked} />
+                            <InputDecimal value={this.GIVEN_MONEY}  type="InputDecimal" name="givenMoney" placeholder="Money received from client" />
+                            <button className="btn btn-success" type="submit">Send</button>
                         </form>
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th>Article price : {this.ARTICLE_PRICE} €</th>
+                                    <th>Article price : {this.state.ARTICLE_PRICE} €</th>
                                     <th>Given money : {GIVEN_MONEY}€</th>
                                 </tr>
                             </thead>
@@ -67,6 +55,7 @@ class MoneyChangingComponent extends Component {
                                 {this.state.GIVEN_MONEY}
                             </tbody>
                         </table>
+                         
                     </div>
                     <div className="change-money">
                         <table className="table">
@@ -84,6 +73,9 @@ class MoneyChangingComponent extends Component {
                 </div>
             )
         }
+        moneyToChange(ARTICLE_PRICE, GIVEN_MONEY) {
+            return axios.get(`${CHANGE_MONEY_API_URL}?articlePrice=${ARTICLE_PRICE}&givenMoney=${GIVEN_MONEY}`);
+        } 
 }
 
 export default MoneyChangingComponent

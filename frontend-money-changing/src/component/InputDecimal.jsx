@@ -31,7 +31,7 @@ export class InputDecimal extends React.Component {
           onBlur={this.blur}
           onChange={this.change}
           value={this.state.input}
-          style={{ fontSize: "20px", padding: "4px" }}
+          style={{ fontSize: "25px", padding: "8px", background:"lightgreen", paddingRight:"30px" }}
           {...this.props}
         />
         <pre style={{ color: "#999" }}>{this.state.input}</pre>
