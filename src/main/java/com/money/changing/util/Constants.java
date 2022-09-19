@@ -1,4 +1,4 @@
-package com.personalTraining.change.util;
+package com.money.changing.util;
 
 public class Constants {
 
